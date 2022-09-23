@@ -1,0 +1,10 @@
+# Tasks (in more or less prioritized order)
+
+* create function to download mnist (check if it is already downloaded)
+* load digit, and save it in different place (perhaps using Pillow ?)
+* choose which format to use for output videos and labels (check common video datasets)
+* load digit, duplicate image info video frames and save video
+* load digit, save it in bigger image and save bounding box (=label)
+* create function to change position and scale of digit
+* create function for realistic position and scale motion
+* create standard setup file
