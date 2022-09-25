@@ -7,7 +7,7 @@ from PIL import Image, ImageOps
 # Extract and save image as a file
 train_images = []
 test_images = []
-for item in range(4):
+for item in range(100):
 
     #select 'test' and 'train' image from the mnist database
     train_image_array = train_X[item]
