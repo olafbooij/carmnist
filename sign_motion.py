@@ -1,17 +1,22 @@
-def straight_motion(distance):
-  def perspective(coordinate, distance):
-    focal_length = 1
-    return coordinate * focal_length / distance
+from random import uniform
 
-  left, top, right, bottom = (-1., -1., 1., 1.)
-  horizontal_shift = -5
-  vertical_shift = 2
+def random_sign():
+  left, top, right, bottom = (-.3, -.3, .3, .3)  # 60 cm square sign
+  horizontal_shift = uniform(-2., 2.)
+  vertical_shift = uniform(0., 3.)
   left += horizontal_shift
   right += horizontal_shift
   top += vertical_shift
   bottom += vertical_shift
+  return((left, top, right, bottom))
   
-  return tuple([perspective(i, distance) for i in [left, top, right, bottom]])
+
+def straight_motion(distance, sign):
+  def perspective(coordinate, distance):
+    focal_length = 1
+    return coordinate * focal_length / distance
+
+  return tuple([perspective(i, distance) for i in sign])
 
 
 def print_bounding_box(bounding_box):
@@ -23,8 +28,6 @@ def print_bounding_box(bounding_box):
   print(left, top)
   print()
 
-print_bounding_box(straight_motion(50))
-print_bounding_box(straight_motion(40))
-print_bounding_box(straight_motion(30))
-print_bounding_box(straight_motion(20))
-print_bounding_box(straight_motion(10))
+sign = random_sign()
+for distance in range(60, 0, -1):
+  print_bounding_box(straight_motion(distance/10, sign))
