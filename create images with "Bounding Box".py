@@ -1,8 +1,19 @@
 from pathlib import Path
 import cv2 as cv
+from PIL import Image, ImageOps
 
 for item in range(100):
-    image = cv.imread(f"train_x_images/{item}.png")
+
+    white_frame = Image.new("RGBA", (220, 220), (255, 255, 255))
+    img_num = Image.open(f"test_x_images/{item}.png").convert("L")
+    img = inverted_image = ImageOps.invert(img_num)
+    x, y = img.size
+    white_frame.paste(img, (0, 0, x, y), img)
+    white_frame.save(f"numberinframe/{item}.png", format="png")
+
+    image = cv.imread(f"numberinframe/{item}.png")
+
+
 
     gray_image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     thresh_image = cv.threshold(gray_image, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
@@ -12,10 +23,11 @@ for item in range(100):
 
     for i in contours:
         x, y, w, h = cv.boundingRect(i)
-        cv.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 4)
+        cv.rectangle(image, (x, y), (x + w, y + h), (255, 255, 255), 4)
 
     box_path = Path("box_images")
     box_path.mkdir(exist_ok=True)
 
     roi = image[y:y + h, x:x + w]
     cv.imwrite(f"{box_path}/roi{item}.jpg", roi)
+
