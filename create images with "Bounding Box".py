@@ -2,6 +2,11 @@ from pathlib import Path
 import cv2 as cv
 from PIL import Image, ImageOps
 
+box_path = Path("box_images")
+number_in_frame = Path("numberinframe")
+number_in_frame.mkdir(exist_ok=True)
+box_path.mkdir(exist_ok=True)
+
 for item in range(100):
 
     white_frame = Image.new("RGBA", (220, 220), (255, 255, 255))
@@ -13,8 +18,6 @@ for item in range(100):
 
     image = cv.imread(f"numberinframe/{item}.png")
 
-
-
     gray_image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     thresh_image = cv.threshold(gray_image, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
 
@@ -25,9 +28,5 @@ for item in range(100):
         x, y, w, h = cv.boundingRect(i)
         cv.rectangle(image, (x, y), (x + w, y + h), (255, 255, 255), 4)
 
-    box_path = Path("box_images")
-    box_path.mkdir(exist_ok=True)
-
     roi = image[y:y + h, x:x + w]
     cv.imwrite(f"{box_path}/roi{item}.jpg", roi)
-
