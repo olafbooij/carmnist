@@ -20,7 +20,7 @@ def simple_movement(image_path):
 
         black_frame = Image.new("RGBA", (220, 220), (0, 0, 0))
         img = Image.open(f"size/size{item}.jpg").convert("L")
-             x, y = img.size
+        x, y = img.size
         black_frame.paste(img, (0, 0, x, y), img)
         black_frame.save(f"numberinframe/{item}.png", format="png")
         transform = Image.open(f"numberinframe/{item}.png")
