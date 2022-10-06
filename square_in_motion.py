@@ -47,6 +47,6 @@ def print_square(square):
   print()
 
 
-square = random_square_points_3d()
-for square_transformed in curved_motion(square):
-  print_square(square_transformed)
+#square = random_square_points_3d()
+#for square_transformed in curved_motion(square):
+#  print_square(square_transformed)
