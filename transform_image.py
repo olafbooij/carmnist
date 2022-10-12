@@ -34,7 +34,7 @@ invpose = numpy.linalg.inv(pose)
 invpose /= invpose[2,2] 
 
 # Image.transform will apply the perspective transformation of the image
-img_out = img_in.transform(imsize, Image.PERSPECTIVE, invpose.flatten()[:8])
+img_out = img_in.transform(imsize, Image.Transform.PERSPECTIVE, invpose.flatten()[:8])
 img_out.save("transformed.png")
 
 
