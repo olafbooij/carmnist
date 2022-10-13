@@ -6,56 +6,66 @@ img_in = Image.open("test_x_images/1.png")
 
 # Create a "pose" (translation and rotation) of the image-plane relative
 # to the camera expressed as a 4x4 transformation matrix.
-pose = concatenate_matrices(translation_matrix((0, 10, 30)),
-                            euler_matrix(0., 2.8, 0.2, 'rxyz'),
-                            translation_matrix((-14, -14, 0)))
+pose = concatenate_matrices(translation_matrix((0, 0, 3)),
+                            euler_matrix(0., 0.8, 0.2, 'rxyz'))
 
 # From this transformation matrix create a 3x3 "Homography matrix". This
 # requires some "magic": adding the 4rd column (translation) to the 3rd
 # column (z-axis rotation), and keep only upper-left 3x3 part.
-pose[:,2] += pose[:,3] 
-pose = pose[0:3, 0:3]
+pose[:,2] += pose[:,3]
+homography = pose[0:3, 0:3]
 
-# To compose a new image, we create a camera calibration matrix K given
-# the image center (c_x, cy) and focal length f.
-imsize = (100, 100)
-cx = imsize[0]//2
-cy = imsize[1]//2
-f = 30
-K = numpy.array([[f, 0, cx],
-                 [0, f, cy],
-                 [0, 0,  1]]);
-pose = numpy.dot(K, pose)
+# To compose a new image, we create camera calibration matrices K_in and K_out given the image centers (cx, cy) and focal lengths f.
+imsize_out = (100, 100)
+cx_out = imsize_out[0]//2
+cy_out = imsize_out[1]//2
+f_out = imsize_out[0]
+K_out = numpy.array([[f_out, 0    , cx_out],
+                     [0    , f_out, cy_out],
+                     [0    , 0    , 1     ]]);
+
+cx_in = img_in.size[0]//2
+cy_in = img_in.size[1]//2
+f_in = img_in.size[0]
+K_in = numpy.array([[f_in, 0   , cx_in],
+                    [0   , f_in, cy_in],
+                    [0   , 0   , 1    ]]);
+
+homography = numpy.dot(K_out, homography)
+homography = numpy.dot(homography, numpy.linalg.inv(K_in))
 
 # The call to transform, actually requires the transformation of the
 # output image pixels to the input image pixels. This is the inverse of
-# the pose we created:
-invpose = numpy.linalg.inv(pose)
-invpose /= invpose[2,2] 
+# the homography we created.
+invhomography = numpy.linalg.inv(homography)
+# Mathematically scale of the homography does not matter. For the
+# transform function it should be scaled such that the last element is 1.
+invhomography /= invhomography[2,2]
 
-# Image.transform will apply the perspective transformation of the image
-img_out = img_in.transform(imsize, Image.Transform.PERSPECTIVE, invpose.flatten()[:8])
+# Image.transform will apply the perspective transformation of the input
+# image.
+img_out = img_in.transform(imsize_out, Image.Transform.PERSPECTIVE, invhomography.flatten())
 img_out.save("transformed.png")
 
 
 
-# The 3x3 matrix "pose" transforms points from the input image space to the
-# output image space. Below we transform a square (borders of the input
-# image) to pixel locations of the output image.
-points = [numpy.array([0, 0]),
-          numpy.array([0, 28]),
-          numpy.array([28, 28]),
-          numpy.array([28, 0]),
-          numpy.array([0, 0]),
-         ]
-def project_point(pose, point):
+# The 3x3 matrix "homography" transforms points from the input image space
+# to the output image space. Below we transform a square (borders of the
+# input image) to pixel locations of the output image.
+points = [numpy.array([0,              0             ]),
+          numpy.array([0,              img_in.size[1]]),
+          numpy.array([img_in.size[0], img_in.size[1]]),
+          numpy.array([img_in.size[0], 0             ]),
+          numpy.array([0,              0             ])]
+
+def project_point(homography, point):
   point_homogenious = [point[0], point[1], 1.]
-  transformed_point_homogenious = numpy.dot(pose, point_homogenious)
+  transformed_point_homogenious = numpy.dot(homography, point_homogenious)
   transformed_point = transformed_point_homogenious[0:2] / transformed_point_homogenious[2]
   return transformed_point
 
-transed = [project_point(pose, point) for point in points]
-  
+transed = [project_point(homography, point) for point in points]
+
 for point in transed:
-  print(point[0], point[1]) 
+  print(point[0], point[1])
 
