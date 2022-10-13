@@ -1,12 +1,14 @@
 from PIL import Image
 import numpy
-from transformations import euler_matrix, concatenate_matrices, translation_matrix
+from transformations import concatenate_matrices, euler_matrix, translation_matrix
+import matplotlib.pyplot as plt
+from urllib.request import urlopen
 
-img_in = Image.open("test_x_images/1.png")
+img_in = Image.open(urlopen("https://python-pillow.org/images/pillow-logo-light-text-1280x640.png"))
 
 # Create a "pose" (translation and rotation) of the image-plane relative
 # to the camera expressed as a 4x4 transformation matrix.
-pose = concatenate_matrices(translation_matrix((0, 0, 3)),
+pose = concatenate_matrices(translation_matrix((-.5, 0, 1)),
                             euler_matrix(0., 0.8, 0.2, 'rxyz'))
 
 # From this transformation matrix create a 3x3 "Homography matrix". This
@@ -16,7 +18,7 @@ pose[:,2] += pose[:,3]
 homography = pose[0:3, 0:3]
 
 # To compose a new image, we create camera calibration matrices K_in and K_out given the image centers (cx, cy) and focal lengths f.
-imsize_out = (100, 100)
+imsize_out = (1000, 1000)
 cx_out = imsize_out[0]//2
 cy_out = imsize_out[1]//2
 f_out = imsize_out[0]
@@ -45,8 +47,6 @@ invhomography /= invhomography[2,2]
 # Image.transform will apply the perspective transformation of the input
 # image.
 img_out = img_in.transform(imsize_out, Image.Transform.PERSPECTIVE, invhomography.flatten())
-img_out.save("transformed.png")
-
 
 
 # The 3x3 matrix "homography" transforms points from the input image space
@@ -59,6 +59,7 @@ points = [numpy.array([0,              0             ]),
           numpy.array([0,              0             ])]
 
 def project_point(homography, point):
+  # To apply a homography we need to use homogeneous coordinates.
   point_homogenious = [point[0], point[1], 1.]
   transformed_point_homogenious = numpy.dot(homography, point_homogenious)
   transformed_point = transformed_point_homogenious[0:2] / transformed_point_homogenious[2]
@@ -66,6 +67,9 @@ def project_point(homography, point):
 
 transed = [project_point(homography, point) for point in points]
 
-for point in transed:
-  print(point[0], point[1])
+# And finaly use some matplotlib to show the results:
+plt.imshow(img_out)
+x_coordinate, y_coordinate = zip(*transed)
+plt.plot(x_coordinate, y_coordinate)
+plt.show()
 
