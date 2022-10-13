@@ -1,44 +1,80 @@
-from random import uniform
-from transformations import identity_matrix, euler_matrix, concatenate_matrices, translation_matrix
+from random import seed, uniform
+from transformations import identity_matrix, euler_matrix, concatenate_matrices, translation_matrix, scale_matrix
 import numpy
 
 
-# Creates corners of a square, shifted randomly
-def random_square_points_3d():
-  left, top, right, bottom = -.3, -.3, .3, .3  # 60 cm square square
-  horizontal_shift = uniform(-1., 1.)
-  vertical_shift   = uniform(-1., 1.)
-  left   += horizontal_shift
-  right  += horizontal_shift
-  top    += vertical_shift
-  bottom += vertical_shift
-  return [numpy.array([left , top   , 0.]),
-          numpy.array([right, top   , 0.]),
-          numpy.array([right, bottom, 0.]),
-          numpy.array([left , bottom, 0.])]
+# Create trajectory of transformations moving further and further away from the
+# camera. The movement follows a curved path (with fixed random translation and
+# rotation). These transformations are expressed as 4x4 transformation
+# matrices.
+def curved_motion(nr_of_steps):
+  # random camera motion (one step) (position direction close to z)
+  cam_translation = translation_matrix((uniform(.01, .01), uniform(.01, .01), uniform(-1.5, -.5)))
+  # bit of camera rotation (bit of y, even less x)
+  cam_rotation = euler_matrix(uniform(-.001,.001), uniform(-.01, .01), 0., 'rxyz')
+  cam_trans_delta = concatenate_matrices(cam_rotation, cam_translation)
+  # begin with a first step of cam_trans_delta, and then iteratively add
+  # another step.
+  cam_trans_square = cam_trans_delta
+  for distance in range(0, nr_of_steps):
+    cam_trans_square = concatenate_matrices(cam_trans_delta, cam_trans_square)
+    yield cam_trans_square
 
 
-# Projects 3d points moving further and further away from camera (in 32 steps).
-# The movement follows a curved trajectory (fixed random translation and
-# rotation.
-def curved_motion(square):
-  # random car motion (one step) (position direction close to z)
-  car_translation = translation_matrix((uniform(.01, .01), uniform(.01, .01), uniform(-1.5, -.5)))
-  # bit of car rotation (bit of y, even less x)
-  car_rotation = euler_matrix(uniform(-.001,.001), uniform(-.01, .01), 0., 'rxyz')
-  car_pose_delta = concatenate_matrices(car_rotation, car_translation)
+# Use this trajectory to create homographies, expressing an input image in the
+# output image at the end of the trajectory.
+def curved_motion_homography(input_image_size, output_image_size):
+  # Define camera calibration K_in for the input image given an image center
+  # a focal length f_in, based on the size of the image input.
+  f_in = input_image_size[0]
+  K_in_inv = numpy.array([[ 1. / f_in, 0.       , -.5 ],
+                          [ 0.       , 1. / f_in, -.5 ],
+                          [ 0.       , 0.       , 1.  ]])
+  # Define camera calibration K_out for the output image given an image center
+  # c_out and focal length f_out, both based on the size of hte output image.
+  c_out = output_image_size[0]//2
+  f_out = output_image_size[0]
+  K_out = numpy.array([[f_out, 0.   , c_out],
+                       [0.   , f_out, c_out],
+                       [0.   , 0.   , 1.   ]]);
+  # Define position of input image relative to the start of the trajectory
+  start_trans_in_image = translation_matrix((uniform(-1., 1.), uniform(-1., 1.), 0))
+  for transformation in curved_motion(32):
+    # Concatenate the start with the transformation of the trajectory
+    homography = concatenate_matrices(transformation, start_trans_in_image)
+    # From the 4x4 transformation matrix create a 3x3 "Homography matrix". This
+    # requires some "magic": adding the 4rd column (translation) to the 3rd
+    # column (z-axis rotation), and keep only upper-left 3x3 part.
+    homography[:,2] += homography[:,3]
+    homography = homography[0:3, 0:3]
+    # Apply th camera calibrations
+    homography = numpy.dot(homography, K_in_inv)
+    homography = numpy.dot(K_out, homography)
+    yield homography
 
-  def project_point(pose, point):
-    point_homogenious = [point[0], point[1], point[2], 1.]
-    transformed_point_homogenious = numpy.dot(pose, point_homogenious)
-    transformed_point = transformed_point_homogenious[0:3] / transformed_point_homogenious[3]
-    projected_point = transformed_point[0:2] / numpy.linalg.norm(transformed_point)
-    return projected_point
 
-  car_pose_square = identity_matrix()
-  for distance in range(0, 32):
-    car_pose_square = concatenate_matrices(car_pose_delta, car_pose_square)
-    yield [project_point(car_pose_square, point) for point in square]
+seed(2)
+
+# let's use this trajectory of homographies to plot the trajectory of a square.
+
+# Creates corners of a square
+def square_points_3d(size):
+  return [numpy.array([0.  , 0   , 1.]),
+          numpy.array([size, 0.  , 1.]),
+          numpy.array([size, size, 1.]),
+          numpy.array([0.  , size, 1.])]
+
+
+def project_point_homography(transformation, point):
+  point_homogenious = [point[0], point[1], 1.]
+  transformed_point_homogenious = numpy.dot(transformation, point_homogenious)
+  projected_point = transformed_point_homogenious[0:2] / transformed_point_homogenious[2]
+  return projected_point
+
+
+def curved_square_motion(square, input_image_size, output_image_size):
+  for cam_homography_square in curved_motion_homography(input_image_size, output_image_size):
+    yield [project_point_homography(cam_homography_square, point) for point in square]
 
 
 def print_square(square):
@@ -46,7 +82,9 @@ def print_square(square):
     print(point[0], point[1])
   print()
 
+input_image_size = (28, 28)
+output_image_size = (100, 100)
+square = square_points_3d(input_image_size[0])
 
-#square = random_square_points_3d()
-#for square_transformed in curved_motion(square):
-#  print_square(square_transformed)
+for square_transformed in curved_square_motion(square, input_image_size, output_image_size):
+  print_square(square_transformed)
