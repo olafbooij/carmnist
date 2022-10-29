@@ -8,6 +8,7 @@ V* create function for realistic position and scale motion
 
 V* load digit, duplicate image info video frames and save video
 * pick random digit
+* load image directly using mnist.load_data() instead of saving them locally using  extract_images_mnist_database 
 * choose which format to use for labels (seems no common format)
 * save bounding box (=label)
 * create function to change position and scale of digit
