@@ -9,6 +9,10 @@ V* create function for realistic position and scale motion
 V* load digit, duplicate image info video frames and save video
 * pick random digit
 * load image directly using mnist.load_data() instead of saving them locally using  extract_images_mnist_database 
+* make the camera rotation of the motion a bit bigger
+* make the translation spped a bit smaller (so the digit is a on average a bit bigger)
+* replace the mockup in the readme to ones produced by digit_in_motion
+* create a lot of videos
 * choose which format to use for labels (seems no common format)
 * save bounding box (=label)
 * create function to change position and scale of digit
