@@ -1,7 +1,7 @@
 from keras.datasets import mnist
 from PIL import Image, ImageOps
 from pathlib import Path
-
+import random
 
 def save_first_100_images(array, path):
     # Extract and save image as a file
