@@ -37,4 +37,4 @@ def load_random_image(array):
 
 print(save_first_100_images(array=test_X, path="test_x_images"))
 print(save_first_100_images(array=train_X, path="train_x_images"))
-load_image(array=test_X)
+load_random_image(array=test_X)
