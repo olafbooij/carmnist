@@ -9,13 +9,13 @@ import numpy
 # matrices.
 def curved_motion(nr_of_steps):
   # random camera motion (one step) (position direction close to z)
-  cam_translation = translation_matrix((uniform(.01, .01), uniform(.01, .01), uniform(-1.5, -.5)))
+  cam_translation = translation_matrix((uniform(.01, .01), uniform(.01, .01), uniform(.5, 1.5)))
   # bit of camera rotation (bit of y, even less x)
   cam_rotation = euler_matrix(uniform(-.001,.001), uniform(-.01, .01), 0., 'rxyz')
   cam_trans_delta = concatenate_matrices(cam_rotation, cam_translation)
   # begin with a first step of cam_trans_delta, and then iteratively add
   # another step.
-  cam_trans_square = cam_trans_delta
+  cam_trans_square = identity_matrix()
   for distance in range(0, nr_of_steps):
     cam_trans_square = concatenate_matrices(cam_trans_delta, cam_trans_square)
     yield cam_trans_square
