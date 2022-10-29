@@ -6,7 +6,8 @@ V* choose which format to use for output videos -> for now folder with separate 
 V* load digit, save it in bigger image
 V* create function for realistic position and scale motion
 
-* load digit, duplicate image info video frames and save video
+V* load digit, duplicate image info video frames and save video
+* pick random digit
 * choose which format to use for labels (seems no common format)
 * save bounding box (=label)
 * create function to change position and scale of digit
