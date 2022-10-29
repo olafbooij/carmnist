@@ -27,4 +27,4 @@ def transform_image(homography, img_in):
     return img_out
 
 
-digit_in_motion(image_path="test_x_images/1.png")
+digit_in_motion(image_path=f"test_x_images/{random.randint(0,100)}.png")
