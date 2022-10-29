@@ -24,9 +24,17 @@ def save_first_100_images(array, path):
 
     return images
 
+def load_random_image(array):
+
+    image_array = array[random.randint(0,10000)]
+    image = Image.fromarray(image_array)
+    image.save("random_digit.png")
+
+    return image
 
 # Load the mnist dataset (caches in .keras/datasets/mnist.npz)
 (train_X, train_y), (test_X, test_y) = mnist.load_data()
 
 print(save_first_100_images(array=test_X, path="test_x_images"))
 print(save_first_100_images(array=train_X, path="train_x_images"))
+load_image(array=test_X)
