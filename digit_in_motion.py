@@ -18,7 +18,7 @@ def digit_in_motion(image_path):
 
 
 def image_in_motion(img_in):
-    img_out_size = (100, 100)
+    img_out_size = SIZE
     for homography in curved_motion.curved_motion_homography(img_in.size, img_out_size):
         yield transform_image(homography, img_in)
 
