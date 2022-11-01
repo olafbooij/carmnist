@@ -1,21 +1,26 @@
 from pathlib import Path
+from keras.datasets import mnist
 from PIL import Image
 import numpy
 import curved_motion
+import random
 
-SIZE = (100,100)
+SIZE = (100, 100)
 
 
 def digit_in_motion(image_path):
-  path_out = Path("digit_in_motion")
-  path_out.mkdir(exist_ok=True)
-  img_in = Image.open(image_path)
-  for item, img_out in enumerate(image_in_motion(img_in)):
-    img_out.save(f'{path_out}/img_{item}.png')
+    # path_out = Path("digit_in_motion")
+    # path_out.mkdir(exist_ok=True)
+    img_in = Image.open(image_path)
+    for item, img_out in enumerate(image_in_motion(img_in)):
+        if item < 10:
+            img_out.save(f'{path_out}/frame_0{item}.png')
+        elif item > 9:
+            img_out.save(f'{path_out}/frame_{item}.png')
 
 
 def image_in_motion(img_in):
-    img_out_size = SIZE
+    img_out_size = (100, 100)
     for homography in curved_motion.curved_motion_homography(img_in.size, img_out_size):
         yield transform_image(homography, img_in)
 
@@ -27,4 +32,30 @@ def transform_image(homography, img_in):
     return img_out
 
 
-digit_in_motion(image_path=f"test_x_images/{random.randint(0,100)}.png")
+def load_random_mnist_image(use_test_set=False):
+    (trainset, testset), _ = mnist.load_data()
+    dataset = testset if use_test_set else trainset
+    image_array = random.choice(dataset)
+    image = Image.fromarray(image_array)
+    return image
+
+for video in range(100):
+    if video < 10:
+        path_out = Path(f"video0000{video}")
+        path_out.mkdir(exist_ok=True)
+    elif 9 < video < 100:
+        path_out = Path(f"video000{video}")
+        path_out.mkdir(exist_ok=True)
+    elif 99 < video < 1000:
+        path_out = Path(f"video00{video}")
+        path_out.mkdir(exist_ok=True)
+    elif 999 < video < 10000:
+        path_out = Path(f"video0{video}")
+        path_out.mkdir(exist_ok=True)
+    else:
+        path_out = Path(f"video{video}")
+        path_out.mkdir(exist_ok=True)
+
+    load_random_mnist_image(use_test_set=False).save("random_mnist.png")
+    digit_in_motion("random_mnist.png")
+
