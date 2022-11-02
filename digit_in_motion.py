@@ -7,7 +7,7 @@ import random
 
 
 
-def digit_in_motion(img_in):
+def digit_in_motion(img_in, path_out):
     for item, img_out in enumerate(image_in_motion(img_in)):
         img_out.save(f'{path_out}/{"frame{:02d}.png".format(item)}')
 
