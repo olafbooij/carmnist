@@ -11,10 +11,11 @@ SIZE = (100, 100)
 def digit_in_motion(image_path):
     img_in = Image.open(image_path)
     for item, img_out in enumerate(image_in_motion(img_in)):
-        if item < 10:
-            img_out.save(f'{path_out}/frame_0{item}.png')
-        elif item > 9:
-            img_out.save(f'{path_out}/frame_{item}.png')
+        img_out.save(f'{path_out}/{"frame{:03d}.png".format(item)}')
+#         if item < 10:
+#             img_out.save(f'{path_out}/frame_0{item}.png')
+#         elif item > 9:
+#             img_out.save(f'{path_out}/frame_{item}.png')
 
 
 def image_in_motion(img_in):
