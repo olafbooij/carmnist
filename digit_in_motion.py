@@ -15,13 +15,13 @@ def digit_in_motion(img_in):
 def image_in_motion(img_in):
     img_out_size = (100, 100)
     for homography in curved_motion.curved_motion_homography(img_in.size, img_out_size):
-        yield transform_image(homography, img_in)
+        yield transform_image(homography, img_out_size, img_in)
 
 
-def transform_image(homography, img_in):
+def transform_image(homography, img_out_size, img_in):
     invhomography = numpy.linalg.inv(homography)
     invhomography /= invhomography[2, 2]
-    img_out = img_in.transform((100, 100), Image.Transform.PERSPECTIVE, invhomography.flatten())
+    img_out = img_in.transform(img_out_size, Image.Transform.PERSPECTIVE, invhomography.flatten())
     return img_out
 
 
