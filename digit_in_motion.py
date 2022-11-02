@@ -8,8 +8,7 @@ import random
 SIZE = (100, 100)
 
 
-def digit_in_motion(image_path):
-    img_in = Image.open(image_path)
+def digit_in_motion(img_in):
     for item, img_out in enumerate(image_in_motion(img_in)):
         img_out.save(f'{path_out}/{"frame{:02d}.png".format(item)}')
 
@@ -38,6 +37,6 @@ for video in range(100):
     path_out = Path("video{:03d}".format(video))
     path_out.mkdir(exist_ok=True)
 
-    load_random_mnist_image(use_test_set=False).save("random_mnist.png")
-    digit_in_motion("random_mnist.png")
+    image = load_random_mnist_image(use_test_set=False)
+    digit_in_motion(image)
 
