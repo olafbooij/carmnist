@@ -38,21 +38,8 @@ def load_random_mnist_image(use_test_set=False):
     return image
 
 for video in range(100):
-    if video < 10:
-        path_out = Path(f"video0000{video}")
-        path_out.mkdir(exist_ok=True)
-    elif 9 < video < 100:
-        path_out = Path(f"video000{video}")
-        path_out.mkdir(exist_ok=True)
-    elif 99 < video < 1000:
-        path_out = Path(f"video00{video}")
-        path_out.mkdir(exist_ok=True)
-    elif 999 < video < 10000:
-        path_out = Path(f"video0{video}")
-        path_out.mkdir(exist_ok=True)
-    else:
-        path_out = Path(f"video{video}")
-        path_out.mkdir(exist_ok=True)
+    path_out = Path("video{:03d}".format(video))
+    path_out.mkdir(exist_ok=True)
 
     load_random_mnist_image(use_test_set=False).save("random_mnist.png")
     digit_in_motion("random_mnist.png")
