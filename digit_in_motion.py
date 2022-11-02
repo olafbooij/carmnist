@@ -37,5 +37,5 @@ for video in range(100):
     path_out.mkdir(parents=True, exist_ok=True)
 
     image = load_random_mnist_image(use_test_set=False)
-    digit_in_motion(image)
+    digit_in_motion(image, path_out)
 
