@@ -32,10 +32,12 @@ def load_random_mnist_image(use_test_set=False):
     image = Image.fromarray(image_array)
     return image
 
-for video in range(100):
-    path_out = Path("videos/video{:03d}".format(video))
-    path_out.mkdir(parents=True, exist_ok=True)
+def generate_video(index):
+    for video in range(index):
+        path_out = Path("videos/video{:03d}".format(video))
+        path_out.mkdir(parents=True, exist_ok=True)
+        image = load_random_mnist_image(use_test_set=False)
+        digit_in_motion(image,path_out)
 
-    image = load_random_mnist_image(use_test_set=False)
-    digit_in_motion(image, path_out)
+generate_video(100)
 
