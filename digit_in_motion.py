@@ -21,7 +21,7 @@ def image_in_motion(img_in):
 def transform_image(homography, img_out_size, img_in):
     invhomography = numpy.linalg.inv(homography)
     invhomography /= invhomography[2, 2]
-    fame_out = img_in.transform(img_out_size, Image.Transform.PERSPECTIVE, invhomography.flatten())
+    frame_out = img_in.transform(img_out_size, Image.Transform.PERSPECTIVE, invhomography.flatten())
     return frame_out
 
 
