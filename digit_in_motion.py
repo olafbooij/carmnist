@@ -8,8 +8,8 @@ import random
 
 
 def digit_in_motion(img_in, path_out):
-    for item, img_out in enumerate(image_in_motion(img_in)):
-        img_out.save(f'{path_out}/{"frame{:02d}.png".format(item)}')
+    for item, fame_out in enumerate(image_in_motion(img_in)):
+        frame_out.save(f'{path_out}/{"frame{:02d}.png".format(item)}')
 
 
 def image_in_motion(img_in):
@@ -21,8 +21,8 @@ def image_in_motion(img_in):
 def transform_image(homography, img_out_size, img_in):
     invhomography = numpy.linalg.inv(homography)
     invhomography /= invhomography[2, 2]
-    img_out = img_in.transform(img_out_size, Image.Transform.PERSPECTIVE, invhomography.flatten())
-    return img_out
+    fame_out = img_in.transform(img_out_size, Image.Transform.PERSPECTIVE, invhomography.flatten())
+    return frame_out
 
 
 def load_random_mnist_image(use_test_set=False):
