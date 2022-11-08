@@ -10,7 +10,6 @@ author = "Olaf Booij"
 co_author = "Olivier van der Kroef" 
 
 dependencies = [
-    "pathlib",
     'Keras',
     'numpy',
     'random',
