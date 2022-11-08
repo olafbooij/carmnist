@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "carmnist"
 version = "0.0.1"
-description = "A simulator to create a video dataset of MNIST digits floating by. The purpose of this dataset is to benchmark video based traffic-sign detection and tracking." 
+description = "A simulator to create a video dataset of MNIST digits floating by. 
 author = "Olaf Booij" 
 co_author = "Olivier van der Kroef" 
 
