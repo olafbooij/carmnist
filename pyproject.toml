@@ -16,6 +16,6 @@ requires-python = ">=3.9"
 dependencies = [
     'keras.datasets',
     'numpy',
-    'Pillow',
+    'Pillow==9.2.0',
     'Tensorflow',
 ]
