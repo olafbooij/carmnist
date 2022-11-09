@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "carmnist"
+version = "0.0.1"
+description = "A simulator to create a video dataset of MNIST digits floating by."
+authors = [
+    {name = "Olivier van der Kroef, Olaf Booij"},
+    ]
+
+requires-python = ">=3.9"
+
+
+dependencies = [
+    'keras.datasets',
+    'numpy',
+    'Pillow',
+    'Tensorflow',
+]
